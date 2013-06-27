@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
 
 object ScaldingBuild extends Build {
   val sharedSettings = Project.defaultSettings ++ assemblySettings ++
-  releaseSettings ++ Seq(
+    releaseSettings ++ Seq(
     organization := "com.twitter",
 
     //TODO: Change to 2.10.* when Twitter moves to Scala 2.10 internally
@@ -27,7 +27,7 @@ object ScaldingBuild extends Build {
 
     resolvers ++= Seq(
       "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-      "releases"  at "http://oss.sonatype.org/content/repositories/releases",
+      "releases" at "http://oss.sonatype.org/content/repositories/releases",
       "Concurrent Maven Repo" at "http://conjars.org/repo",
       "Clojars Repository" at "http://clojars.org/repo",
       "Twitter Maven" at "http://maven.twttr.com",
@@ -47,26 +47,32 @@ object ScaldingBuild extends Build {
 
     publishArtifact in Test := false,
 
-    pomIncludeRepository := { x => false },
+    pomIncludeRepository := {
+      x => false
+    },
 
-    publishTo <<= version { (v: String) =>
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
-        Some("sonatype-snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("sonatype-releases"  at nexus + "service/local/staging/deploy/maven2")
+    publishTo <<= version {
+      (v: String) =>
+        val nexus = "https://oss.sonatype.org/"
+        if (v.trim.endsWith("SNAPSHOT"))
+          Some("sonatype-snapshots" at nexus + "content/repositories/snapshots")
+        else
+          Some("sonatype-releases" at nexus + "service/local/staging/deploy/maven2")
     },
 
     // Janino includes a broken signature, and is not needed:
-    excludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
-      val excludes = Set("jsp-api-2.1-6.1.14.jar", "jsp-2.1-6.1.14.jar",
-                         "jasper-compiler-5.5.12.jar", "janino-2.5.16.jar")
-      cp filter { jar => excludes(jar.data.getName)}
+    excludedJars in assembly <<= (fullClasspath in assembly) map {
+      cp =>
+        val excludes = Set("jsp-api-2.1-6.1.14.jar", "jsp-2.1-6.1.14.jar",
+          "jasper-compiler-5.5.12.jar", "janino-2.5.16.jar")
+        cp filter {
+          jar => excludes(jar.data.getName)
+        }
     },
 
     // Some of these files have duplicates, let's ignore:
-    mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
-      {
+    mergeStrategy in assembly <<= (mergeStrategy in assembly) {
+      (old) => {
         case s if s.endsWith(".class") => MergeStrategy.last
         case s if s.endsWith("project.clj") => MergeStrategy.concat
         case s if s.endsWith(".html") => MergeStrategy.last
@@ -78,35 +84,35 @@ object ScaldingBuild extends Build {
 
     pomExtra := (
       <url>https://github.com/twitter/scalding</url>
-      <licenses>
-        <license>
-          <name>Apache 2</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-          <distribution>repo</distribution>
-          <comments>A business-friendly OSS license</comments>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:twitter/scalding.git</url>
-        <connection>scm:git:git@github.com:twitter/scalding.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>posco</id>
-          <name>Oscar Boykin</name>
-          <url>http://twitter.com/posco</url>
-        </developer>
-        <developer>
-          <id>avibryant</id>
-          <name>Avi Bryant</name>
-          <url>http://twitter.com/avibryant</url>
-        </developer>
-        <developer>
-          <id>argyris</id>
-          <name>Argyris Zymnis</name>
-          <url>http://twitter.com/argyris</url>
-        </developer>
-      </developers>)
+        <licenses>
+          <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+          </license>
+        </licenses>
+        <scm>
+          <url>git@github.com:twitter/scalding.git</url>
+          <connection>scm:git:git@github.com:twitter/scalding.git</connection>
+        </scm>
+        <developers>
+          <developer>
+            <id>posco</id>
+            <name>Oscar Boykin</name>
+            <url>http://twitter.com/posco</url>
+          </developer>
+          <developer>
+            <id>avibryant</id>
+            <name>Avi Bryant</name>
+            <url>http://twitter.com/avibryant</url>
+          </developer>
+          <developer>
+            <id>argyris</id>
+            <name>Argyris Zymnis</name>
+            <url>http://twitter.com/argyris</url>
+          </developer>
+        </developers>)
   ) ++ mimaDefaultSettings
 
   lazy val scalding = Project(
@@ -114,13 +120,14 @@ object ScaldingBuild extends Build {
     base = file("."),
     settings = sharedSettings ++ DocGen.publishSettings
   ).settings(
-    test := { },
-    publish := { }, // skip publishing for this root project.
-    publishLocal := { }
+    test := {},
+    publish := {}, // skip publishing for this root project.
+    publishLocal := {}
   ).aggregate(scaldingArgs,
-      scaldingDate,
-      scaldingCore,
-      scaldingCommons)
+    scaldingDate,
+    scaldingCore,
+    scaldingCommons,
+    scaldingAvro)
 
   lazy val scaldingArgs = Project(
     id = "scalding-args",
@@ -174,7 +181,7 @@ object ScaldingBuild extends Build {
   ).settings(
     name := "scalding-commons",
     previousArtifact := Some("com.twitter" % "scalding-commons_2.9.2" % "0.2.0"),
-   libraryDependencies ++= Seq(
+    libraryDependencies ++= Seq(
       "com.backtype" % "dfs-datastores-cascading" % "1.3.4",
       "com.backtype" % "dfs-datastores" % "1.3.4",
       "commons-io" % "commons-io" % "2.4",
@@ -191,5 +198,23 @@ object ScaldingBuild extends Build {
       "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
     )
   ).dependsOn(scaldingArgs, scaldingDate, scaldingCore)
+
+  lazy val scaldingAvro = Project(
+    id = "scalding-avro",
+    base = file("scalding-avro"),
+    settings = sharedSettings
+  ).settings(
+    name := "scalding-avro",
+    previousArtifact := Some("com.twitter" % "scalding-avro_2.9.2" % "0.1.0"),
+    libraryDependencies ++= Seq(
+      "cascading.avro" % "avro-scheme" % "2.2.1-SNAPSHOT",
+      "org.apache.avro" % "avro" % "1.7.4",
+      "org.apache.hadoop" % "hadoop-core" % "0.20.2" % "provided",
+      "log4j" % "log4j" % "1.2.16",
+      "org.slf4j" % "slf4j-log4j12" % "1.6.6",
+      "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
+      "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
+    )
+  ).dependsOn(scaldingCore)
 
 }
