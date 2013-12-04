@@ -179,8 +179,8 @@ object ScaldingBuild extends Build {
       "com.twitter" %% "algebird-core" % algebirdVersion,
       // TODO: move this dependency to scalding-json or something
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.3",
-      "org.apache.hadoop" % "hadoop-common" % hadoopVersion, //% "provided",
-      "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion, //% "provided",
+      "org.apache.hadoop" % "hadoop-common" % hadoopVersion % "provided",
+      "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.slf4j" % "slf4j-log4j12" % slf4jVersion % "provided"
     )
@@ -220,10 +220,11 @@ object ScaldingBuild extends Build {
     name := "scalding-avro",
     previousArtifact := Some("com.twitter" % "scalding-avro_2.9.2" % "0.1.0"),
     libraryDependencies ++= Seq(
-      "cascading.avro" % "avro-scheme" % "2.1.2",
+      "cascading.avro" % "avro-scheme" % "2.2-hadoop2-SNAPSHOT",
       "org.apache.avro" % "avro" % "1.7.4",
+      "org.apache.hadoop" % "hadoop-common" % hadoopVersion % "provided",
+      "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
-      "org.apache.hadoop" % "hadoop-core" % hadoopVersion % "provided",
       "org.slf4j" % "slf4j-log4j12" % slf4jVersion % "test",
       "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
       "org.scala-tools.testing" %% "specs" % "1.6.9" % "test"
