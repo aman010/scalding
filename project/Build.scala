@@ -158,9 +158,9 @@ object ScaldingBuild extends Build {
   lazy val scaldingDate = module("date")
 
   lazy val cascadingVersion =
-    System.getenv.asScala.getOrElse("SCALDING_CASCADING_VERSION", "2.2.0")
+    System.getenv.asScala.getOrElse("SCALDING_CASCADING_VERSION", "2.5.1")
 
-  val hadoopVersion = "1.1.2"
+  val hadoopVersion = "2.2.0"
   val algebirdVersion = "0.3.0"
   val bijectionVersion = "0.5.4"
   val chillVersion = "0.3.5"
@@ -170,7 +170,7 @@ object ScaldingBuild extends Build {
     libraryDependencies ++= Seq(
       "cascading" % "cascading-core" % cascadingVersion,
       "cascading" % "cascading-local" % cascadingVersion,
-      "cascading" % "cascading-hadoop" % cascadingVersion,
+      "cascading" % "cascading-hadoop2-mr1" % cascadingVersion,
       "com.twitter" % "maple" % "0.2.7",
       "com.twitter" %% "chill" % chillVersion,
       "com.twitter" % "chill-hadoop" % chillVersion,
@@ -179,7 +179,8 @@ object ScaldingBuild extends Build {
       "com.twitter" %% "algebird-core" % algebirdVersion,
       // TODO: move this dependency to scalding-json or something
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.2.3",
-      "org.apache.hadoop" % "hadoop-core" % hadoopVersion % "provided",
+      "org.apache.hadoop" % "hadoop-common" % hadoopVersion, //% "provided",
+      "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion, //% "provided",
       "org.slf4j" % "slf4j-api" % slf4jVersion,
       "org.slf4j" % "slf4j-log4j12" % slf4jVersion % "provided"
     )
